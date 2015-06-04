@@ -1,5 +1,6 @@
 class MeasurementsController < ApplicationController
 
+  before_filter :authenticate_user_from_token!
   before_filter :authenticate_user!, :only => [:new, :create, :update, :destroy]
 
   has_scope :captured_after
@@ -43,12 +44,12 @@ class MeasurementsController < ApplicationController
 
     respond_with @measurements
   end
-  
+
   def show
     @measurement = Measurement.find(params[:id])
     respond_with @measurement
   end
-  
+
   def new
     @last_measurement = current_user.measurements.last
     @measurement = if @last_measurement.present?
@@ -64,7 +65,7 @@ class MeasurementsController < ApplicationController
 
   def create
     @map = Map.find params[:map_id] if params[:map_id].present?
-    @measurement = Measurement.new(params[:measurement])
+    @measurement = Measurement.new(measurement_params)
     @measurement.user = current_user
     Measurement.transaction do
       @measurement.save
@@ -77,7 +78,7 @@ class MeasurementsController < ApplicationController
 
   def update
     @measurement = Measurement.find(params[:id])
-    @new_measurement = @measurement.revise(params[:measurement])
+    @new_measurement = @measurement.revise(measurement_params)
 
     # respond_with typically doesn't pass the resource for PUT, but since we're being non-destructive, our PUT actually returns a new resource
     # see: https://rails.lighthouseapp.com/projects/8994-ruby-on-rails/tickets/5199-respond_with-returns-on-put-and-delete-verb#ticket-5199-14
@@ -98,5 +99,11 @@ class MeasurementsController < ApplicationController
     @count[:count] = Measurement.count
     respond_with @count
   end
-  
+
+  private
+
+  def measurement_params
+     params.require(:measurement).permit(:value, :unit, :location, :location_name, :device_id, :height, :surface, :radiation, :latitude, :longitude, :captured_at)
+  end
+
 end

@@ -2,6 +2,7 @@ class BgeigieImportsController < ApplicationController
 
   respond_to :html, :json
 
+  before_filter :authenticate_user_from_token!
   before_filter :authenticate_user!, :only => [:new, :create, :edit, :update, :destroy]
   before_filter :require_moderator, :only => :approve
 
@@ -27,7 +28,7 @@ class BgeigieImportsController < ApplicationController
   def new
     @bgeigie_import = BgeigieImport.new
   end
-  
+
   def approve
     @bgeigie_import = BgeigieImport.find(params[:id])
     @bgeigie_import.approve!

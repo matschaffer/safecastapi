@@ -3,7 +3,7 @@ class ApplicationController < ActionController::Base
 
   before_filter :set_locale
 
-  respond_to :html, :json, :safecast_api_v1_json 
+  respond_to :html, :json, :safecast_api_v1_json
 
   before_filter :cors_set_access_control_headers
   skip_before_filter :verify_authenticity_token
@@ -14,21 +14,21 @@ class ApplicationController < ActionController::Base
   rescue_from CanCan::AccessDenied do |exception|
     redirect_to root_url, :alert => exception.message
   end
-  
+
 
   def index
     cors_set_access_control_headers
     result = { }
-    respond_with @result = @doc 
+    respond_with @result = @doc
   end
 
   def options
     cors_set_access_control_headers
     render :text => '', :content_type => 'application/json'
   end
-    
+
 protected
-  
+
   def rescue_action(env)
     respond_to do |wants|
       wants.json { render :json => "Error", :status => 500 }
@@ -37,9 +37,9 @@ protected
 
   def cors_set_access_control_headers
     return unless request.env['HTTP_ACCEPT'].eql? 'application/json'
-    if current_user 
+    if current_user
       host = request.env['HTTP_ORIGIN']
-    else 
+    else
       host = request.env['HTTP_ORIGIN']
       unless /safecast.org$/.match host
         host = 'safecast.org'
@@ -50,11 +50,11 @@ protected
     headers['Access-Control-Allow-Headers'] = '*, X-Requested-With'
     headers['Access-Control-Max-Age'] = '100000'
   end
- 
+
   def require_moderator
     unless user_signed_in? and current_user.moderator?
       set_flash_message(:alert, 'access_denied')
-      redirect_to root_path 
+      redirect_to root_path
     end
   end
 
@@ -69,4 +69,19 @@ protected
   def default_url_options(options={})
     { :locale => I18n.locale }
   end
+
+  private
+
+  def authenticate_user_from_token!
+    user_email = params[:user_email].presence
+    user       = user_email && User.find_by_email(user_email)
+
+    # Notice how we use Devise.secure_compare to compare the token
+    # in the database with the token given in the params, mitigating
+    # timing attacks.
+    if user && Devise.secure_compare(user.authentication_token, params[:user_token])
+      sign_in user, store: false
+    end
+  end
+
 end

@@ -15,17 +15,19 @@ class DevicesController < ApplicationController
   has_scope :sensor do |controller, scope, value|
     scope.where("sensor LIKE ?", "%#{value}%")
   end
+
+  before_filter :authenticate_user_from_token!
   before_filter :authenticate_user!, :only => :create
 
   def new
     @device = Device.new
   end
-  
+
   def index
     @devices = apply_scopes(Device).page(params[:page])
     respond_with @devices
   end
-  
+
   def show
     @device = Device.find(params[:id])
     respond_with @device
@@ -35,5 +37,5 @@ class DevicesController < ApplicationController
     @device = Device.get_or_create(params[:device])
     respond_with @device, :location => :devices
   end
-  
+
 end

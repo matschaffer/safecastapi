@@ -33,6 +33,7 @@ gem 'bootstrap-kaminari-views'
 
 gem 'rails_admin'
 
+gem 'dotenv-rails'
 
 #for docs
 gem 'pygments.rb'
@@ -48,12 +49,13 @@ gem 'jquery-rails'
 gem 'thin'
 
 group :test do
-  gem 'capybara', '~> 2.1.0'
+  gem 'capybara'
   gem 'database_cleaner'
   gem 'fabrication', '2.2.2'
   gem 'launchy'
   gem 'pry'
   gem 'rspec-rails'
+  gem 'rspec-its'
   gem 'email_spec'
 end
 

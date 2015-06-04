@@ -3,9 +3,9 @@ Safecast::Application.routes.draw do
 
   root :to => "dashboards#show"
 
-
   scope "(:locale)", :constraints => { :locale => /(en-US|ja)/ } do
-    root :to => "dashboards#show"
+    get "/" => "dashboards#show"
+
     devise_for :users
     devise_for :admins
     devise_scope :user do
@@ -39,12 +39,13 @@ Safecast::Application.routes.draw do
     end
   end
 
-  match '/api/*path' => redirect('/%{path}.%{format}'), :format => true
-  match '/api/*path' => redirect('/%{path}'), :format => false
+  match '/api/*path' => redirect('/%{path}.%{format}'), :format => true, via: [:get, :post]
+  match '/api/*path' => redirect('/%{path}'), :format => false, via: [:get, :post]
+
   post '/api/measurements' => 'measurements#create'
   post '/api/measurements.(:format)' => 'measurements#create'
 
   #legacy fixes (maps.safecast.org now redirects to api.safecast.org, so people might be using the old maps.safecast.org/drive/add URI)
-  match "/drive/add", :to => redirect("/")
-  match '/count', :to => 'measurements#count'
+  match "/drive/add", :to => redirect("/"), via: [:get, :post]
+  match '/count', :to => 'measurements#count', via: [:get, :post]
 end
