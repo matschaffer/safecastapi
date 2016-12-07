@@ -1,0 +1,12 @@
+version: '2'
+services:
+  web:
+    image: safecast/safecastapi
+    ports:
+      - 3000:3000
+    environment:
+      - RAILS_ENV=development
+      - DATABASE_URL=postgis://matschaffer:UP9pGkBD4fPPqvn@mat-test-1.cvgwlxxke8g1.us-east-1.rds.amazonaws.com/safecast
+
+
+

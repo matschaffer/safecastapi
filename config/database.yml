@@ -70,3 +70,6 @@ production: &production
 staging:
   <<: *production
   database: safecast_staging
+
+docker:
+  url: <%= ENV['DATABASE_URL'] %>
