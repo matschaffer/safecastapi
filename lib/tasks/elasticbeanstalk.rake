@@ -2,8 +2,8 @@
 
 require 'elasticbeanstalk_helper'
 
-def elasticbeanstalk_helper(environment_config = nil)
-  ElasticBeanstalkHelper.new('api', 'safecastapi', environment_config)
+def elasticbeanstalk_helper
+  ElasticBeanstalkHelper.new('api', 'safecastapi')
 end
 
 namespace :elasticbeanstalk do
